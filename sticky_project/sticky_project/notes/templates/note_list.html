@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form method="get" class="search-box">
+    <input type="text" name="q" placeholder="Search notes..." value="{{ request.GET.q }}">
+    <button type="submit">Search</button>
+</form>
+
+<h2>Your Notes</h2>
+
+<a href="/notes/new/" class="btn btn-create create-btn">+ Create Note</a>
+
+<div class="notes-grid">
+    {% for note in page_obj %}
+        <div class="note-card" style="background-color: {{ note.color }};">
+            
+            {% if note.is_pinned %}
+                <div class="pinned">📌</div>
+            {% endif %}
+
+            <h3>{{ note.title }}</h3>
+            <p>{{ note.content }}</p>
+
+            <div class="note-actions">
+                <a href="{% url 'note_edit' note.id %}" class="btn btn-edit">Edit</a>
+                <a href="{% url 'note_delete' note.id %}" class="btn btn-delete">Delete</a>
+            </div>
+        </div>
+    {% empty %}
+        <p>No notes found.</p>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ request.GET.q }}">First</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}">Previous</a>
+    {% endif %}
+
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}">Next</a>
+    {% endif %}
+</div>
+
+{% endblock %}
